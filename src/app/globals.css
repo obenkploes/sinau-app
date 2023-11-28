@@ -1,0 +1,16 @@
+:root{
+  --side-bar:250px;
+  --navbar-height:58px;
+}
+
+.title{
+  width: var(--side-bar);
+  margin:0;
+  padding: 0;
+}
+
+#sidebar{
+  width: var(--side-bar);
+  margin: 0;
+  height: calc(100vh - var(--navbar-height));
+}

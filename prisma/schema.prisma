@@ -1,0 +1,26 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Kelas{
+  id Int @id @default(autoincrement())
+  kode_kelas String 
+  tingkat String
+  jurusan_id Int
+  jurusan Jurusan @relation(fields: [jurusan_id],references: [id],onDelete: NoAction)
+}
+
+model Jurusan{
+  id Int @id @default(autoincrement())
+  kode_jurusan String
+  deskripsi String
+  kelas Kelas[]
+}
