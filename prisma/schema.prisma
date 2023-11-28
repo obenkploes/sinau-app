@@ -13,7 +13,7 @@ datasource db {
 model Kelas{
   id Int @id @default(autoincrement())
   kode_kelas String 
-  tingkat String
+  tingkat Int
   jurusan_id Int
   jurusan Jurusan @relation(fields: [jurusan_id],references: [id],onDelete: NoAction)
 }
