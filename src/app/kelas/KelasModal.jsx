@@ -7,12 +7,9 @@ import { MdSave } from "react-icons/md"
 
 
 const KelasModal = (props) => {
+ 
     const [listJurusan,setListJurusan]=useState([])
-    const [kelas, setKelas] = useState({
-        kode_kelas: '',
-        tingkat:10,
-        jurusan_id:0
-    })
+    const [kelas, setKelas] = useState(props.dataKelas)
     const handleInput = e => {
         const { name, value } = e.target
         setKelas(prevstate => ({
@@ -20,15 +17,33 @@ const KelasModal = (props) => {
             [name]: value
         }))
     }
+    const handleShow=()=>{
+        setKelas(props.dataKelas)
+        if(kelas.jurusan_id<1){
+            setKelas(prev=>({
+                ...prev,
+                jurusan_id:listJurusan[0].id
+            }))
+        }
+    }
     const handleSubmit=async(e)=>{
         e.preventDefault()
+        let urlTarget = kelas.id >0?'api/kelas/update/'+kelas.id:'api/kelas'
         await axios({
-            url:'api/kelas',
+            url:urlTarget,
             method:'post',
             data:kelas
         })
-        .then(res=>console.log(res.data))
+        .then(res=>{
+            if(kelas.id>0){
+                props.update(res.data.kelas)
+            }else{
+                props.add(res.data.kelas)
+            }
+            console.log(res.data.kelas)
+        })
         .catch(err=>console.log(err))
+        props.hideModal()
     }
     useEffect(()=>{
         const loadJurusan = async ()=>{
@@ -37,17 +52,13 @@ const KelasModal = (props) => {
             })
             .then(res=>{
                 const {jurusan}=res.data
-                setKelas(prev=>({
-                    ...prev,
-                    jurusan_id:jurusan[0].id
-                }))
                 setListJurusan(jurusan)
             })
         }
         loadJurusan()
     },[])
     return (
-        <Modal show={props.show}>
+        <Modal show={props.show} onEnter={()=>handleShow()} onExit={()=>props.hide()} >
             <Modal.Header>
                 <Modal.Title>Form kelas</Modal.Title>
                 <Button className="btn-close" onClick={() => props.hideModal()}></Button>
@@ -56,7 +67,7 @@ const KelasModal = (props) => {
                 <Form onSubmit={handleSubmit}>
                     <Form.Group controlId="kode_kelas" className="mb-3">
                         <Form.Label>Kode kelas</Form.Label>
-                        <Form.Control type="text" placeholder="X-TP" autoFocus value={kelas.kode_kelas} name="kode_kelas" onChange={handleInput} />
+                        <Form.Control type="text" placeholder="X-TP" autoFocus value={kelas.kode_kelas} name="kode_kelas" onChange={handleInput} required />
                     </Form.Group>
                     <Form.Group controlId="tingkat" className="mb-3">
                         <Form.Label>Tingkat</Form.Label>
