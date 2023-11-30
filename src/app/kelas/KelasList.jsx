@@ -5,16 +5,38 @@ import { useEffect, useState } from "react"
 import { Button, Card, Modal, Spinner, Table } from "react-bootstrap"
 import { MdAdd, MdDelete, MdEdit } from 'react-icons/md'
 import KelasModal from "./KelasModal"
+import DeleteModal from "@/components/DeleteModal"
 
 const Kelaslist = () => {
     const [listKelas, setListKelas] = useState([])
     const [modal, setModal] = useState(false)
+    const [deleteModal, setDeleteModal] = useState(false)
     const [kelas, setKelas] = useState({
         id: 0,
         kode_kelas: '',
         tingkat: 10,
         jurusan_id: 0
     })
+    // delete prosess
+    const showDeleteModal = (dt) => {
+        setKelas(dt)
+        setDeleteModal(true)
+    }
+    const hapus=async (dt)=>{
+        await axios({
+            url:'api/kelas/'+dt.id,
+            method:'delete'
+        })
+        .then(res=>{
+            let dtkelas = listKelas
+            let index = dtkelas.findIndex(el=>el.id==dt.id)
+            dtkelas.splice(index,1)
+            setListKelas(dtkelas)
+        })
+        .catch(err=>console.log(err))
+        setDeleteModal(false)
+    }
+    // end delete
     const addKelas = (kelasBaru) => {
         let dt = listKelas
         dt.push(kelasBaru)
@@ -23,7 +45,7 @@ const Kelaslist = () => {
     const updateKelas = (kelasBaru) => {
         let dt = listKelas
         let index = dt.findIndex(el => el.id == kelasBaru.id)
-        dt[index]= kelasBaru
+        dt[index] = kelasBaru
         setListKelas(dt)
     }
     const handleHide = () => {
@@ -89,7 +111,7 @@ const Kelaslist = () => {
                                         <Button className="btn-sm btn-success" onClick={() => handleEdit(el)}>
                                             <MdEdit />
                                         </Button>
-                                        <Button className="btn-sm btn-danger ms-1">
+                                        <Button className="btn-sm btn-danger ms-1" onClick={() => showDeleteModal(el)}>
                                             <MdDelete />
                                         </Button>
                                     </td>
@@ -100,6 +122,15 @@ const Kelaslist = () => {
                 </Card.Body>
             </Card>
             <KelasModal show={modal} hideModal={() => setModal(false)} dataKelas={kelas} hide={handleHide} add={addKelas} update={updateKelas}></KelasModal>
+            <DeleteModal
+                show={deleteModal}
+                close={() => setDeleteModal(!deleteModal)}
+                hide={handleHide}
+                handleDelete={hapus}
+                data={kelas}
+            >
+
+            </DeleteModal>
         </div>
     )
 }
