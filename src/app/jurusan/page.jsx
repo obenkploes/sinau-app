@@ -22,6 +22,29 @@ const Jurusan =()=>{
             [name]:value
         }))
     }
+    const handleCancel = ()=>{
+        setJurusan({
+            id:0,
+            kode_jurusan:'',
+            deskripsi:'' 
+        })
+        document.getElementById('kode_jurusan').focus()
+    }
+    const handleEdit=(dt)=>{
+        setJurusan(dt)
+        document.getElementById('kode_jurusan').focus()
+    }
+    const handleSubmit=async(e)=>{
+        e.preventDefault()
+        let mt = jurusan.id >0 ?'put':'post'
+        await axios({
+            url:'api/jurusan',
+            method:mt,
+            data:jurusan
+        })
+        .then(res=>console.log(res.data))
+        .catch(err=>console.log(err))
+    }
     useEffect(()=>{
         const loadData=async()=>{
             await axios({
@@ -44,20 +67,20 @@ const Jurusan =()=>{
                         <Card.Title>Form jurusan</Card.Title>
                     </Card.Header>
                     <Card.Body>
-                        <Form>
+                        <Form onSubmit={handleSubmit}>
                             <Form.Group controlId="kode_jurusan" className="mb-3">
                                 <Form.Label>Kode Jurusan</Form.Label>
-                                <Form.Control type="text" name="kode_jurusan" placeholder="RPL" autoFocus />
+                                <Form.Control type="text" name="kode_jurusan" placeholder="RPL" autoFocus onChange={e=>handleInput(e)} value={jurusan.kode_jurusan} required/>
                             </Form.Group>
                             <Form.Group controlId="deskripsi" className="mb-3">
                                 <Form.Label>Deskripsi</Form.Label>
-                                <Form.Control type="text" name="deskripsi" placeholder="Rekayasa Perangkat Lunak"  />
+                                <Form.Control type="text" name="deskripsi" placeholder="Rekayasa Perangkat Lunak"  onChange={e=>handleInput(e)} value={jurusan.deskripsi} required/>
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Button className="btn-primary  form-control">
+                                <Button className="btn-primary  form-control" type="submit">
                                     <MdSave className="mb-1" /> Simpan
                                 </Button>
-                                <Button className="btn-success  form-control mt-1">
+                                <Button className="btn-success  form-control mt-1" onClick={()=>handleCancel()}>
                                     <MdCancel className="mb-1" /> Batal
                                 </Button>
                             </Form.Group>
@@ -87,7 +110,7 @@ const Jurusan =()=>{
                                         <td>{el.kode_jurusan}</td>
                                         <td>{el.deskripsi}</td>
                                         <td >
-                                            <Button className="btn-sm btn-success"><MdEdit /></Button>
+                                            <Button className="btn-sm btn-success" onClick={()=>handleEdit(el)}><MdEdit /></Button>
                                             <Button className="btn-sm btn-danger ms-1"><MdDelete /></Button>
                                         </td>
                                     </tr>
