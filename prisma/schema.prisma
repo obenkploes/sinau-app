@@ -24,3 +24,9 @@ model Jurusan{
   deskripsi String
   kelas Kelas[]
 }
+
+model Siswa{
+  nisn Int @id
+  nis Int
+  
+}
